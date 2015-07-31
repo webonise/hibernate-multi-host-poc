@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.bytecode.use_reflection_optimizer">false</property>
+        <property name="hibernate.connection.driver_class">com.mysql.jdbc.ReplicationDriver</property>
+        <property name="hibernate.connection.password">6e46040c03f5a9b532336ed06279f943</property>
+        <property name="hibernate.connection.url">
+            jdbc:mysql:replication://114.143.191.205:3342,114.143.191.205:3343/EXAMPLE?loadBalanceBlacklistTimeout=5000&amp;loadBalanceConnectionGroup=ugc&amp;loadBalanceEnableJMX=true&amp;autoReconnect=true&amp;autoReconnectForPools=true
+        </property>
+        <property name="hibernate.connection.username">webonise</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="show_sql">true</property>
+
+        <mapping class="org.webonise.multihostpoc.models.Person"></mapping>
+    </session-factory>
+</hibernate-configuration>
