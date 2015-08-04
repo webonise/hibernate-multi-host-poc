@@ -1,6 +1,5 @@
 package org.webonise.multihostpoc.dao;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -12,6 +11,10 @@ public interface GenericDao<T> {
 
     List<T> readAll();
 
+    T getById(Integer id);
+
     void setIsReadOnlyFlag(boolean isReadOnlyFlag);
+
+    boolean isMasterDBConnection();
 
 }

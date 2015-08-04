@@ -1,5 +1,6 @@
 package org.webonise.multihostpoc.daoimpl;
 
+import com.mysql.jdbc.ReplicationConnection;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -33,7 +34,6 @@ public class GenericDaoImpl<T,PK extends Serializable> implements GenericDao<T> 
     @Override
     public void save(T object) {
         Session currentSession = getSession();
-        prepSession(currentSession, isReadOnlyFlag());
         currentSession.getTransaction().begin();
         currentSession.saveOrUpdate(object);
         currentSession.getTransaction().commit();
@@ -42,16 +42,21 @@ public class GenericDaoImpl<T,PK extends Serializable> implements GenericDao<T> 
     @Override
     public List<T> readAll() {
         Session currentSession = getSession();
-        prepSession(currentSession,isReadOnlyFlag());
         Criteria criteria = currentSession.createCriteria(type);
         List<T> result = (List<T>) criteria.list();
         return result;
+    }
+
+    @Override
+    public T getById(Integer id) {
+        return type.cast(getSession().get(type, id));
     }
 
     private Session getSession(){
         if(this.session == null ){
             this.session = sessionFactory.openSession();
         }
+        prepSession(this.session, isReadOnlyFlag());
         return  this.session;
     }
 
@@ -72,6 +77,13 @@ public class GenericDaoImpl<T,PK extends Serializable> implements GenericDao<T> 
     @Override
     public void setIsReadOnlyFlag(boolean isReadOnlyFlag) {
         this.isReadOnlyFlag = isReadOnlyFlag;
+    }
+
+    @Override
+    public boolean isMasterDBConnection() {
+        ReplicationConnection replicationConnection = (ReplicationConnection) ((SessionImpl)getSession()).connection();
+        return  replicationConnection.getCurrentConnection() == replicationConnection.getMasterConnection();
+
     }
 
 }
