@@ -1,7 +1,9 @@
 package org.webonise.multihostpoc.daoimpl;
 
 
+
 import org.hibernate.exception.GenericJDBCException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +42,18 @@ public class PersonDAOImplTests {
 
     }
 
+    @Test
+    public void testCaching(){
+        LOG.info("running the save data");
+        Person p = getFixture();
+        personDaoImpl.setIsReadOnlyFlag(false);
+        personDaoImpl.save(p);
+        personDaoImpl.setIsReadOnlyFlag(true);
+        Assert.assertFalse(personDaoImpl.isMasterDBConnection());
+        Person record = personDaoImpl.getById(p.getId());
+        Assert.assertTrue(p == record);
+    }
+
     @Test(expectedExceptions = GenericJDBCException.class)
     public void testSaveDataFailure(){
         LOG.info("running the save data");
@@ -55,11 +69,23 @@ public class PersonDAOImplTests {
         personDaoImpl.setIsReadOnlyFlag(true);
         List<Person> result =  personDaoImpl.readAll();
         Assert.assertNotNull(result);
-        LOG.info("Population is "+result.size());
+        LOG.info("Population is " + result.size());
         for(Person p : result){
             LOG.info(p.toString());
         }
 
+    }
+
+    @Test
+    public void testSlaveDBForReadConnection(){
+        personDaoImpl.setIsReadOnlyFlag(true);
+        Assert.assertFalse(personDaoImpl.isMasterDBConnection());
+    }
+
+    @Test
+    public void testMasterDBForWriteConnection() {
+        personDaoImpl.setIsReadOnlyFlag(false);
+        Assert.assertTrue(personDaoImpl.isMasterDBConnection());
     }
 
 
